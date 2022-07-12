@@ -1,15 +1,18 @@
 pragma solidity ^0.5.0;
 
 /**
- * @title   EllipticCurve
+ * @title   ECDSA
  *
- * @author  Tilman Drerup;
+ * @author  Hagen Hoferichter;
  *
- * @notice  Implements elliptic curve math; Parametrized for SECP256R1.
+ * @notice  Parametrizable Elliptic Curve contract.
  *
  *          Includes components of code by Andreas Olofsson, Alexander Vlasov
- *          (https://github.com/BANKEX/CurveArithmetics), and Avi Asayag
- *          (https://github.com/orbs-network/elliptic-curve-solidity)
+ *          (https://github.com/BANKEX/CurveArithmetics), 
+            Avi Asayag
+ *          (https://github.com/orbs-network/elliptic-curve-solidity),
+            Tilman Drerup
+            (https://github.com/tdrerup/elliptic-curve-solidity)
  *
  * @dev     NOTE: To disambiguate public keys when verifying signatures, activate
  *          condition 'rs[1] > lowSmax' in validateSignature().
@@ -20,7 +23,7 @@ contract EllipticCurve {
     uint constant a;
     uint constant b;
     uint constant gx;
-    uint constant gy5;
+    uint constant gy;
     uint constant p;
     uint constant n;
 
@@ -73,9 +76,14 @@ contract EllipticCurve {
     /**
      * @dev Transform affine coordinates into projective coordinates.
      */
-    function toProjectivePoint(uint x0, uint y0) public pure
-        returns (uint[3] memory P)
-    {
+    function
+    toProjectivePoint(
+        uint x0,
+        uint y0
+    )
+    public
+    pure
+    returns (uint[3] memory P){
         P[2] = addmod(0, 1, p);
         P[0] = mulmod(x0, P[2], p);
         P[1] = mulmod(y0, P[2], p);
@@ -84,9 +92,16 @@ contract EllipticCurve {
     /**
      * @dev Add two points in affine coordinates and return projective point.
      */
-    function addAndReturnProjectivePoint(uint x1, uint y1, uint x2, uint y2) public pure
-        returns (uint[3] memory P)
-    {
+    function 
+    addAndReturnProjectivePoint(
+        uint x1,
+        uint y1,
+        uint x2,
+        uint y2
+    )
+    public
+    pure
+    returns (uint[3] memory P){
         uint x;
         uint y;
         (x, y) = add(x1, y1, x2, y2);
@@ -96,9 +111,15 @@ contract EllipticCurve {
     /**
      * @dev Transform from projective to affine coordinates.
      */
-    function toAffinePoint(uint x0, uint y0, uint z0) public pure
-        returns (uint x1, uint y1)
-    {
+    function
+    toAffinePoint(
+        uint x0,
+        uint y0,
+        uint z0
+    ) 
+    public
+    pure
+    returns (uint x1, uint y1){
         uint z0Inv;
         z0Inv = inverseMod(z0, p);
         x1 = mulmod(x0, z0Inv, p);
@@ -108,27 +129,36 @@ contract EllipticCurve {
     /**
      * @dev Return the zero curve in projective coordinates.
      */
-    function zeroProj() public pure
-        returns (uint x, uint y, uint z)
-    {
+    function
+    zeroProj()
+    public
+    pure
+    returns (uint x, uint y, uint z){
         return (0, 1, 0);
     }
 
     /**
      * @dev Return the zero curve in affine coordinates.
      */
-    function zeroAffine() public pure
-        returns (uint x, uint y)
-    {
+    function
+    zeroAffine()
+    public
+    pure
+    returns (uint x, uint y){
         return (0, 0);
     }
 
     /**
      * @dev Check if the curve is the zero curve.
      */
-    function isZeroCurve(uint x0, uint y0) public pure
-        returns (bool isZero)
-    {
+    function
+    isZeroCurve(
+        uint x0,
+        uint y0
+    )
+    public
+    pure
+    returns (bool isZero){
         if(x0 == 0 && y0 == 0) {
             return true;
         }
@@ -138,9 +168,14 @@ contract EllipticCurve {
     /**
      * @dev Check if a point in affine coordinates is on the curve.
      */
-    function isOnCurve(uint x, uint y) public pure
-        returns (bool)
-    {
+    function
+    isOnCurve(
+        uint x,
+        uint y
+    )
+    public
+    pure
+    returns (bool){
         if (0 == x || x == p || 0 == y || y == p) {
             return false;
         }
@@ -162,9 +197,15 @@ contract EllipticCurve {
      * @dev Double an elliptic curve point in projective coordinates. See
      * https://www.nayuki.io/page/elliptic-curve-point-addition-in-projective-coordinates
      */
-    function twiceProj(uint x0, uint y0, uint z0) public pure
-        returns (uint x1, uint y1, uint z1)
-    {
+    function
+    twiceProj(
+        uint x0,
+        uint y0,
+        uint z0
+    )
+    public
+    pure
+    returns (uint x1, uint y1, uint z1){
         uint t;
         uint u;
         uint v;
@@ -209,9 +250,18 @@ contract EllipticCurve {
      * @dev Add two elliptic curve points in projective coordinates. See
      * https://www.nayuki.io/page/elliptic-curve-point-addition-in-projective-coordinates
      */
-    function addProj(uint x0, uint y0, uint z0, uint x1, uint y1, uint z1) public pure
-        returns (uint x2, uint y2, uint z2)
-    {
+    function
+    addProj(
+        uint x0,
+        uint y0,
+        uint z0,
+        uint x1,
+        uint y1,
+        uint z1
+    )
+    public 
+    pure
+    returns (uint x2, uint y2, uint z2){
         uint t0;
         uint t1;
         uint u0;
@@ -245,9 +295,17 @@ contract EllipticCurve {
     /**
      * @dev Helper function that splits addProj to avoid too many local variables.
      */
-    function addProj2(uint v, uint u0, uint u1, uint t1, uint t0) private pure
-        returns (uint x2, uint y2, uint z2)
-    {
+    function
+    addProj2(
+        uint v, 
+        uint u0, 
+        uint u1, 
+        uint t1, 
+        uint t0
+    )
+    private 
+    pure
+    returns (uint x2, uint y2, uint z2){
         uint u;
         uint u2;
         uint u3;
