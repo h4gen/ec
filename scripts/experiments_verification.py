@@ -5,7 +5,7 @@ import numpy as  np
 from hashlib import sha256, md5
 
 
-sk = SigningKey.generate(curve=SECP128r1, hashfunc=md5) # uses NIST192p
+sk = SigningKey.generate(curve=SECP128r1, hashfunc=md5)
 sk.to_string()
 len(sk.to_string())
 vk = sk.verifying_key
@@ -42,5 +42,5 @@ def main():
             [vk.to_string()[:16], vk.to_string()[16:]], 
             {'gas' : 15**6})
 
-        print(bool_resp)
+        assert bool_resp
         
