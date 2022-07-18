@@ -17,26 +17,26 @@ pragma solidity ^0.5.0;
  * @dev     NOTE: To disambiguate public keys when verifying signatures, activate
  *          condition 'rs[1] > lowSmax' in validateSignature().
  */
-contract EllipticCurve {
+contract ECDSA {
 
     // Set parameters for curve.
-    uint constant a;
-    uint constant b;
-    uint constant gx;
-    uint constant gy;
-    uint constant p;
-    uint constant n;
+    uint128 a;
+    uint128 b;
+    uint128 gx;
+    uint128 gy;
+    uint128 p;
+    uint128 n;
 
-    uint constant lowSmax = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
+    // uint128 constant lowSmax = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
 
-    function constructor(
-        uint _a,
-        uint _b,
-        uint _gx,
-        uint _gy,
-        uint _p,
-        uint _n
-    ) {
+    constructor(
+        uint128 _a,
+        uint128 _b,
+        uint128 _gx,
+        uint128 _gy,
+        uint128 _p,
+        uint128 _n
+    ) public {
         a=_a;
         b=_b;
         gx=_gx;
@@ -48,7 +48,7 @@ contract EllipticCurve {
     /**
      * @dev Inverse of u in the field of modulo m.
      */
-    function inverseMod(uint u, uint m) internal pure
+    function inverseMod(uint u, uint m) internal view
         returns (uint)
     {
         if (u == 0 || u == m || m == 0)
@@ -82,7 +82,7 @@ contract EllipticCurve {
         uint y0
     )
     public
-    pure
+    view
     returns (uint[3] memory P){
         P[2] = addmod(0, 1, p);
         P[0] = mulmod(x0, P[2], p);
@@ -100,7 +100,7 @@ contract EllipticCurve {
         uint y2
     )
     public
-    pure
+    view
     returns (uint[3] memory P){
         uint x;
         uint y;
@@ -118,7 +118,7 @@ contract EllipticCurve {
         uint z0
     ) 
     public
-    pure
+    view
     returns (uint x1, uint y1){
         uint z0Inv;
         z0Inv = inverseMod(z0, p);
@@ -132,7 +132,7 @@ contract EllipticCurve {
     function
     zeroProj()
     public
-    pure
+    view
     returns (uint x, uint y, uint z){
         return (0, 1, 0);
     }
@@ -143,7 +143,7 @@ contract EllipticCurve {
     function
     zeroAffine()
     public
-    pure
+    view
     returns (uint x, uint y){
         return (0, 0);
     }
@@ -157,7 +157,7 @@ contract EllipticCurve {
         uint y0
     )
     public
-    pure
+    view
     returns (bool isZero){
         if(x0 == 0 && y0 == 0) {
             return true;
@@ -174,7 +174,7 @@ contract EllipticCurve {
         uint y
     )
     public
-    pure
+    view
     returns (bool){
         if (0 == x || x == p || 0 == y || y == p) {
             return false;
@@ -204,7 +204,7 @@ contract EllipticCurve {
         uint z0
     )
     public
-    pure
+    view
     returns (uint x1, uint y1, uint z1){
         uint t;
         uint u;
@@ -260,7 +260,7 @@ contract EllipticCurve {
         uint z1
     )
     public 
-    pure
+    view
     returns (uint x2, uint y2, uint z2){
         uint t0;
         uint t1;
@@ -304,7 +304,7 @@ contract EllipticCurve {
         uint t0
     )
     private 
-    pure
+    view
     returns (uint x2, uint y2, uint z2){
         uint u;
         uint u2;
@@ -338,7 +338,7 @@ contract EllipticCurve {
     /**
      * @dev Add two elliptic curve points in affine coordinates.
      */
-    function add(uint x0, uint y0, uint x1, uint y1) public pure
+    function add(uint x0, uint y0, uint x1, uint y1) public view
         returns (uint, uint)
     {
         uint z0;
@@ -351,7 +351,7 @@ contract EllipticCurve {
     /**
      * @dev Double an elliptic curve point in affine coordinates.
      */
-    function twice(uint x0, uint y0) public pure
+    function twice(uint x0, uint y0) public view
         returns (uint, uint)
     {
         uint z0;
@@ -364,7 +364,7 @@ contract EllipticCurve {
     /**
      * @dev Multiply an elliptic curve point by a 2 power base (i.e., (2^exp)*P)).
      */
-    function multiplyPowerBase2(uint x0, uint y0, uint exp) public pure
+    function multiplyPowerBase2(uint x0, uint y0, uint exp) public view
         returns (uint, uint)
     {
         uint base2X = x0;
@@ -381,7 +381,7 @@ contract EllipticCurve {
     /**
      * @dev Multiply an elliptic curve point by a scalar.
      */
-    function multiplyScalar(uint x0, uint y0, uint scalar) public pure
+    function multiplyScalar(uint x0, uint y0, uint scalar) public view
         returns (uint x1, uint y1)
     {
         if(scalar == 0) {
@@ -423,7 +423,7 @@ contract EllipticCurve {
     /**
      * @dev Multiply the curve's generator point by a scalar.
      */
-    function multipleGeneratorByScalar(uint scalar) public pure
+    function multipleGeneratorByScalar(uint scalar) public view
         returns (uint, uint)
     {
         return multiplyScalar(gx, gy, scalar);
@@ -432,7 +432,14 @@ contract EllipticCurve {
     /**
      * @dev Validate combination of message, signature, and public key.
      */
-    function validateSignature(bytes32 message, uint[2] memory rs, uint[2] memory Q) public pure
+    function 
+    validateSignature(
+        bytes16 message_hash, 
+        uint[2] memory rs, 
+        uint[2] memory Q
+    )
+    public
+    view
         returns (bool)
     {
 
@@ -450,7 +457,7 @@ contract EllipticCurve {
         uint y2;
 
         uint sInv = inverseMod(rs[1], n);
-        (x1, y1) = multiplyScalar(gx, gy, mulmod(uint(message), sInv, n));
+        (x1, y1) = multiplyScalar(gx, gy, mulmod(uint128(message_hash), sInv, n));
         (x2, y2) = multiplyScalar(Q[0], Q[1], mulmod(rs[0], sInv, n));
         uint[3] memory P = addAndReturnProjectivePoint(x1, y1, x2, y2);
 
