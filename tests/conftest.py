@@ -13,9 +13,9 @@ def setup(fn_isolation):
 @pytest.fixture(scope="module")
 def SECP128R1(accounts, ECDSA):
     """
-    Yield a `Contract` object for the VyperStorage contract.
+    Yield a `Contract` object for the ECDSA contract.
+    Configured for SECP128R1 https://neuromancer.sk/std/secg/secp128r1
     """
-    # Parameters: https://neuromancer.sk/std/secg/secp128r1
     yield accounts[0].deploy(
         ECDSA,
         0xfffffffdfffffffffffffffffffffffc, #a

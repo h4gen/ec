@@ -5,7 +5,7 @@ project_structure:
       
 # automatically fetch contract sources from Etherscan
 autofetch_sources: True
-dotenv: .env
+# dotenv: .env
 
 
 networks:
