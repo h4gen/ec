@@ -338,8 +338,16 @@ contract ECDSA {
     /**
      * @dev Add two elliptic curve points in affine coordinates.
      */
-    function add(uint x0, uint y0, uint x1, uint y1) public view
-        returns (uint, uint)
+    function 
+    add(
+        uint x0,
+        uint y0,
+        uint x1,
+        uint y1
+    )
+    public
+    view
+    returns (uint, uint)
     {
         uint z0;
 
@@ -351,8 +359,14 @@ contract ECDSA {
     /**
      * @dev Double an elliptic curve point in affine coordinates.
      */
-    function twice(uint x0, uint y0) public view
-        returns (uint, uint)
+    function 
+    twice(
+        uint x0,
+        uint y0
+    ) 
+    public 
+    view
+    returns (uint, uint)
     {
         uint z0;
 
@@ -364,8 +378,15 @@ contract ECDSA {
     /**
      * @dev Multiply an elliptic curve point by a 2 power base (i.e., (2^exp)*P)).
      */
-    function multiplyPowerBase2(uint x0, uint y0, uint exp) public view
-        returns (uint, uint)
+    function 
+    multiplyPowerBase2(
+        uint x0,
+        uint y0,
+        uint exp
+    )
+    public
+    view
+    returns (uint, uint)
     {
         uint base2X = x0;
         uint base2Y = y0;
@@ -381,8 +402,15 @@ contract ECDSA {
     /**
      * @dev Multiply an elliptic curve point by a scalar.
      */
-    function multiplyScalar(uint x0, uint y0, uint scalar) public view
-        returns (uint x1, uint y1)
+    function 
+    multiplyScalar(
+        uint x0, 
+        uint y0, 
+        uint scalar
+    )
+    public
+    view
+    returns (uint x1, uint y1)
     {
         if(scalar == 0) {
             return zeroAffine();
@@ -423,8 +451,13 @@ contract ECDSA {
     /**
      * @dev Multiply the curve's generator point by a scalar.
      */
-    function multipleGeneratorByScalar(uint scalar) public view
-        returns (uint, uint)
+    function 
+    multipleGeneratorByScalar(
+        uint scalar
+        ) 
+    public
+    view
+    returns (uint, uint)
     {
         return multiplyScalar(gx, gy, scalar);
     }
@@ -439,7 +472,7 @@ contract ECDSA {
         uint[2] memory Q
     )
     public
-    view
+    // view
         returns (bool)
     {
 
