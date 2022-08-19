@@ -3,8 +3,6 @@ pragma solidity ^0.5.0;
 /**
  * @title   ECDSA
  *
- * @author  Hagen Hoferichter;
- *
  * @notice  Parametrizable Elliptic Curve contract.
  *
  *          Includes components of code by Andreas Olofsson, Alexander Vlasov
